@@ -179,32 +179,11 @@ class _CardBodyState extends State<CardBody> {
                             ],
                           ),
                         ),
-                        new InkWell(
-                          onTap: () {
-                            if (widget._animationController.status ==
-                                AnimationStatus.dismissed)
-                              widget._animationController.forward();
-                          },
-                          child: new Container(
-                            decoration: new BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: new BorderRadius.circular(50),
-                              boxShadow: [
-                                new BoxShadow(
-                                    color: Colors.grey[700],
-                                    offset: new Offset(1.0, 1.0),
-                                    blurRadius: 2),
-                                new BoxShadow(
-                                    color: Colors.grey[400],
-                                    offset: new Offset(2.0, 2.0),
-                                    blurRadius: 2)
-                              ],
-                            ),
-                            height: 50,
-                            width: 50,
-                            padding: new EdgeInsets.all(10),
-                            child: new Icon(Icons.add),
-                          ),
+                        new RoundedButton(
+                            new Icon(Icons.add), Colors.green, 50.0, () {
+                              if (widget._animationController.status == AnimationStatus.dismissed)
+                                widget._animationController.forward();
+                            }
                         )
                       ],
                     )
@@ -228,33 +207,55 @@ class _CardBodyState extends State<CardBody> {
                             });
                           },
                         ),
-                        new InkWell(
-                          onTap: () {
-                            if (widget._animationController.status ==
-                                AnimationStatus.dismissed)
+                        new RoundedButton(
+                            new Icon(Icons.add_shopping_cart), Colors.green, 60,() { 
+                              if (widget._animationController.status == AnimationStatus.dismissed)
                               widget._animationController.forward();
-                          },
-                          child: new Container(
-                            decoration: new BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: new BorderRadius.circular(30),
-                              boxShadow: [
-                                new BoxShadow(
-                                    color: Colors.grey[700],
-                                    offset: new Offset(1.0, 1.0),
-                                    blurRadius: 2),
-                                new BoxShadow(
-                                    color: Colors.grey[400],
-                                    offset: new Offset(2.0, 2.0),
-                                    blurRadius: 2)
-                              ],
-                            ),
-                            padding: new EdgeInsets.all(20),
-                            child: new Icon(Icons.add_shopping_cart),
-                          ),
-                        ),
+                            }
+                        )
                       ],
                     )),
         ));
+  }
+}
+
+class RoundedButton extends StatefulWidget {
+  RoundedButton(this.icon, this.color, this.size, this.click);
+  final Widget icon;
+  final Color color;
+  final double size;
+  final Function click;
+  @override
+  _RoundedButtonState createState() => _RoundedButtonState();
+}
+
+class _RoundedButtonState extends State<RoundedButton> {
+  @override
+  Widget build(BuildContext context) {
+    return new InkWell(
+      onTap: () {
+        if (widget.click != null) widget.click();
+      },
+      child: new Container(
+        decoration: new BoxDecoration(
+          color: widget.color,
+          borderRadius: new BorderRadius.circular(widget.size),
+          boxShadow: [
+            new BoxShadow(
+                color: Colors.grey[700],
+                offset: new Offset(1.0, 1.0),
+                blurRadius: 2),
+            new BoxShadow(
+                color: Colors.grey[400],
+                offset: new Offset(2.0, 2.0),
+                blurRadius: 2)
+          ],
+        ),
+        height: widget.size,
+        width: widget.size,
+        padding: new EdgeInsets.all(10),
+        child: widget.icon,
+      ),
+    );
   }
 }
