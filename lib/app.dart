@@ -9,6 +9,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
         body: new ListView(
       children: <Widget>[
         new Card(
@@ -135,6 +136,7 @@ class _CardBodyState extends State<CardBody> {
         margin: new EdgeInsets.all(5),
         decoration: new BoxDecoration(
           color: Colors.grey[100],
+          borderRadius: new BorderRadius.circular(10),
           boxShadow: [
             new BoxShadow(
                 color: Colors.grey[500],
@@ -142,7 +144,7 @@ class _CardBodyState extends State<CardBody> {
                 blurRadius: 5)
           ],
         ),
-        height: 100,
+        height: 120,
         child: new Opacity(
           opacity: widget.opacity,
           child: new Center(
@@ -152,7 +154,7 @@ class _CardBodyState extends State<CardBody> {
                       children: <Widget>[
                         new Container(
                           width: widget.size.width / 1.5 - 10,
-                          padding: new EdgeInsets.all(5),
+                          padding: new EdgeInsets.all(7),
                           child: new Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -164,51 +166,81 @@ class _CardBodyState extends State<CardBody> {
                                     width: widget.size.width / 1.5 - 50,
                                     child: new Text(widget.title,
                                         style: new TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
+                                            fontSize: 21,
+                                            fontWeight: FontWeight.w500,
+                                        ),
                                         maxLines: 1,
                                         softWrap: true,
                                         overflow: TextOverflow.ellipsis),
                                   )
                                 ],
                               ),
+                              new Container(
+                                height: 1,
+                                margin: new EdgeInsets.only(top: 5, bottom: 5),
+                                decoration: new BoxDecoration(color: Colors.grey[400]),
+                              ),
                               new Text(widget.description,
-                                  maxLines: 3,
-                                  softWrap: true,
+                                  maxLines: 4,
                                   overflow: TextOverflow.ellipsis)
                             ],
                           ),
                         ),
-                        new RoundedButton(
-                            new Icon(Icons.add), Colors.green, 50.0, () {
-                              if (widget._animationController.status == AnimationStatus.dismissed)
+                        new CustomButton(
+                          null,
+                          new Icon(Icons.add_shopping_cart, color: Colors.white),
+                          new Color.fromARGB(255, 51, 85, 255),
+                          50,
+                          100,
+                          (){
+                            if (widget._animationController.status == AnimationStatus.dismissed)
                                 widget._animationController.forward();
-                            }
+                          }
                         )
                       ],
                     )
                   : new Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        new RaisedButton(
-                          child: new Text("-"),
-                          onPressed: () {
-                            setState(() {
-                              if (widget.qtde > 0) widget.qtde--;
-                            });
-                          },
+                        new CustomButton(
+                            null,
+                            new Icon(Icons.remove, color: Colors.white),
+                            Colors.red[500],
+                            30,
+                            70,
+                            () { 
+                              setState(() {
+                                if (widget.qtde > 0) widget.qtde--;
+                              });
+                            }
                         ),
-                        new Text(widget.qtde.toString()),
-                        new RaisedButton(
-                          child: new Text("+"),
-                          onPressed: () {
-                            setState(() {
-                              widget.qtde++;
-                            });
-                          },
+                        new Chip(
+                          backgroundColor: new Color.fromARGB(255, 51, 85, 255),
+                          label:
+                            new Text(widget.qtde.toString(),
+                              style: new TextStyle(fontSize: 24,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
                         ),
-                        new RoundedButton(
-                            new Icon(Icons.add_shopping_cart), Colors.green, 60,() { 
+                        new CustomButton(
+                            null,
+                            new Icon(Icons.add, color: Colors.white),
+                            Colors.green[500],
+                            30,
+                            70,
+                            () { 
+                              setState(() {
+                                widget.qtde++;
+                              });
+                            }
+                        ),
+                        new CustomButton(
+                            null,
+                            new Icon(Icons.done, color: Colors.white),
+                            new Color.fromARGB(255, 51, 85, 255),
+                            50,
+                            100,
+                            () { 
                               if (widget._animationController.status == AnimationStatus.dismissed)
                               widget._animationController.forward();
                             }
@@ -219,27 +251,31 @@ class _CardBodyState extends State<CardBody> {
   }
 }
 
-class RoundedButton extends StatefulWidget {
-  RoundedButton(this.icon, this.color, this.size, this.click);
+class CustomButton extends StatefulWidget {
+  CustomButton(this.text, this.icon, this.color, this.heigh, this.width, this.click);
+  final Text text;
   final Widget icon;
   final Color color;
-  final double size;
+  final double heigh;
+  final double width;
   final Function click;
   @override
-  _RoundedButtonState createState() => _RoundedButtonState();
+  _CustomButtonState createState() => _CustomButtonState();
 }
 
-class _RoundedButtonState extends State<RoundedButton> {
+class _CustomButtonState extends State<CustomButton> {
   @override
   Widget build(BuildContext context) {
     return new InkWell(
-      onTap: () {
-        if (widget.click != null) widget.click();
+      onTap: (){
+        widget.click();
       },
-      child: new Container(
+      child: Container(
+        height: widget.heigh,
+        width: widget.width,
         decoration: new BoxDecoration(
           color: widget.color,
-          borderRadius: new BorderRadius.circular(widget.size),
+          borderRadius: new BorderRadius.circular(5),
           boxShadow: [
             new BoxShadow(
                 color: Colors.grey[700],
@@ -251,10 +287,9 @@ class _RoundedButtonState extends State<RoundedButton> {
                 blurRadius: 2)
           ],
         ),
-        height: widget.size,
-        width: widget.size,
-        padding: new EdgeInsets.all(10),
-        child: widget.icon,
+        child: new Center(
+          child: widget.icon == null ? widget.text : widget.icon
+        ),
       ),
     );
   }
