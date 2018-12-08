@@ -23,6 +23,7 @@ class _AppState extends State<App> {
       children: <Widget>[
         new Container(padding: new EdgeInsets.only(top: mediaQuey.padding.top)),
         new Collapse(mediaQuey, 100, _scrollController),
+        new Collapse(mediaQuey, 100, _scrollController),
         new Flexible(
           child: new ListView(
             controller: _scrollController,
@@ -227,20 +228,54 @@ class _CollapseState extends State<Collapse> with TickerProviderStateMixin {
 
             },
             child: new Container(
-              height: 30,
+              padding: new EdgeInsets.all(5),
               width: widget.mediaQuey.size.width,
-              decoration: new BoxDecoration(color: Colors.red),
-              child: new Text("titulo"),
+              decoration: new BoxDecoration(
+                color: Colors.black,
+                border: new Border(bottom: new BorderSide(color: Colors.white))
+              ),
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  new Text("Sessoes disponiveis", style: new TextStyle(fontSize: 24, color: Colors.white)),
+                  new Row(
+                    children: <Widget>[
+                      new Chip(label: new Text("10"),),
+                      new Icon(!_close ? Icons.arrow_drop_down : Icons.arrow_drop_up, color: Colors.white,)
+                    ],
+                  )
+                ],
+              ),
             )
           ),
           new Container(
             height: _heightCollapse,
             width: widget.mediaQuey.size.width,
-            decoration: new BoxDecoration(color: Colors.blue),
+            decoration: new BoxDecoration(color: Colors.black),
             child: new Opacity(
               opacity: _opacity,
               child: new Container(
-                child: new Text("conteudo"),
+                padding: new EdgeInsets.all(15),
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        new Text("Sessoes", style: new TextStyle(fontSize: 21, color: Colors.white),),
+                        new Text("10", style: new TextStyle(fontSize: 21, color: Colors.white),),
+                      ],
+                    ),
+                    new Divider(color: Colors.white,),
+                    new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        new Text("Semanal", style: new TextStyle(fontSize: 21, color: Colors.white),),
+                        new Text("0", style: new TextStyle(fontSize: 21, color: Colors.white),),
+                      ],
+                    )
+                  ],
+              ),
               ),
             )
           ),
