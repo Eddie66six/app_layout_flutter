@@ -58,35 +58,39 @@ class _CollapseSimpleState extends State<CollapseSimple> with TickerProviderStat
   }
 
   @override
-    void dispose() {
-      super.dispose();
-      _collapseController.dispose();
+  void dispose() {
+    super.dispose();
+    _collapseController.dispose();
+  }
+
+  _onTapCollapse(){
+    if(_collapseController.status == AnimationStatus.completed && _close){
+      _collapseController.reverse();
+      _close = false;
     }
+    else if(_collapseController.status == AnimationStatus.dismissed){
+      _collapseController.forward();
+      _close = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    var decorationBackground = new BoxDecoration(
+      border: new Border(
+        bottom: new BorderSide(color: Colors.white, width: 0.8),
+        top: new BorderSide(color: Colors.white, width: 0.8)
+      )
+    );
+
     return new Container(
-      decoration: new BoxDecoration(
-        border: new Border(
-          bottom: new BorderSide(color: Colors.white, width: 0.8),
-          top: new BorderSide(color: Colors.white, width: 0.8)
-        )
-      ),
+      decoration: decorationBackground,
       child: new Column(
         children: <Widget>[
           //header
           new InkWell(
-            onTap: (){
-              if(_collapseController.status == AnimationStatus.completed && _close){
-                _collapseController.reverse();
-                _close = false;
-              }
-              else if(_collapseController.status == AnimationStatus.dismissed){
-                _collapseController.forward();
-                _close = true;
-              }
-
-            },
+            onTap: ()=> _onTapCollapse(),
             child: new Container(
               padding: new EdgeInsets.all(5),
               width: widget.mediaQuey.size.width,
@@ -100,7 +104,7 @@ class _CollapseSimpleState extends State<CollapseSimple> with TickerProviderStat
                   new Row(
                     children: <Widget>[
                       new Text("10", style: new TextStyle(color: Colors.white)),
-                      new Icon(!_close ? Icons.arrow_drop_down : Icons.arrow_drop_up, color: Colors.white,)
+                      new Icon(!_close ? Icons.arrow_drop_down : Icons.arrow_drop_up, color: Colors.white)
                     ],
                   )
                 ],

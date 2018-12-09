@@ -58,6 +58,17 @@ class _CollapseWeekCalendarState extends State<CollapseWeekCalendar> with Ticker
     return date.day.toString() + "/" + date.month.toString() + "/" + date.year.toString();
   }
 
+  _onTapCollapse(){
+    if(_collapseController.status == AnimationStatus.completed && _close){
+      _collapseController.reverse();
+      _close = false;
+    }
+    else if(_collapseController.status == AnimationStatus.dismissed){
+      _collapseController.forward();
+      _close = true;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -105,14 +116,35 @@ class _CollapseWeekCalendarState extends State<CollapseWeekCalendar> with Ticker
   Widget build(BuildContext context) {
     weekDays = _getWeekDays(currentDate);
 
-    return Container(
-      decoration: new BoxDecoration(
-        color: widget.backgroundcolor,
-        border: new Border(
-          bottom: new BorderSide(color: Colors.white, width: 0.8),
-          top: new BorderSide(color: Colors.white, width: 0.8)
+    var rowWeek = new Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: weekDays.map((item) =>
+        new InkWell(
+          onTap: (){
+            setState(() {
+              currentDate = _getFistDayOfWeek(currentDate).add(new Duration(days: weekDays.indexOf(item)));
+            });
+          },
+          child: new Column(
+            children: <Widget>[
+              new Text(widget.week[weekDays.indexOf(item)], style:  currentDate.day == item ? selectedStyle : normalStyle),
+              new Text(item.toString(), style:  currentDate.day == item ? selectedStyle : normalStyle),
+            ],
+          )
         )
-      ),
+      ).toList()
+    );
+
+    var decorationBackground = new BoxDecoration(
+      color: widget.backgroundcolor,
+      border: new Border(
+        bottom: new BorderSide(color: Colors.white, width: 0.8),
+        top: new BorderSide(color: Colors.white, width: 0.8)
+      )
+    );
+
+    return Container(
+      decoration: decorationBackground,
       child: new Column(
         children: <Widget>[
           new Container(
@@ -128,9 +160,9 @@ class _CollapseWeekCalendarState extends State<CollapseWeekCalendar> with Ticker
                       child: new Icon(Icons.arrow_left, color: Colors.white,),
                       onTap: ()=> _alterWeek(false)
                     ),
-                    new Text(widget.week[currentDate.weekday == 7 ? 0 : currentDate.weekday]
-                        + ", " + _formatDate(currentDate),
-                        style: normalStyle),
+                    new Text(
+                      widget.week[currentDate.weekday == 7 ? 0 : currentDate.weekday] + ", " + _formatDate(currentDate), style: normalStyle
+                    ),
                     new InkWell(
                       child: new Icon(Icons.arrow_right, color: Colors.white,),
                       onTap: ()=> _alterWeek(true)
@@ -138,16 +170,7 @@ class _CollapseWeekCalendarState extends State<CollapseWeekCalendar> with Ticker
                   ],
                 ),
                 new InkWell(
-                  onTap: (){
-                    if(_collapseController.status == AnimationStatus.completed && _close){
-                      _collapseController.reverse();
-                      _close = false;
-                    }
-                    else if(_collapseController.status == AnimationStatus.dismissed){
-                      _collapseController.forward();
-                      _close = true;
-                    }
-                  },
+                  onTap: ()=> _onTapCollapse(),
                   child: new Icon(!_close ? Icons.arrow_drop_down : Icons.arrow_drop_up, color: Colors.white,)
                 )
               ],
@@ -157,25 +180,8 @@ class _CollapseWeekCalendarState extends State<CollapseWeekCalendar> with Ticker
             height: _heightCollapse,
             child: new Opacity(
               opacity: _opacity,
-          child:new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: weekDays.map((item) =>
-            new InkWell(
-              onTap: (){
-                setState(() {
-                  currentDate = _getFistDayOfWeek(currentDate).add(new Duration(days: weekDays.indexOf(item)));
-                });
-            },
-          child: new Column(
-            children: <Widget>[
-                new Text(widget.week[weekDays.indexOf(item)], style:  currentDate.day == item ? selectedStyle : normalStyle),
-                new Text(item.toString(), style:  currentDate.day == item ? selectedStyle : normalStyle),
-            ],
-          )
-        )
-        ).toList()
-      )
-          )
+              child: rowWeek
+            )
           )
         ],
       )
