@@ -1,3 +1,5 @@
+import 'package:app_layout/collapseSimple.dart';
+import 'package:app_layout/collapseWeekCalendar.dart';
 import 'package:flutter/material.dart';
 
 class App extends StatefulWidget {
@@ -22,8 +24,8 @@ class _AppState extends State<App> {
         body: new Column(
       children: <Widget>[
         new Container(padding: new EdgeInsets.only(top: mediaQuey.padding.top)),
-        new Collapse(mediaQuey, 100, _scrollController),
-        new Collapse(mediaQuey, 100, _scrollController),
+        new CollapseSimple(mediaQuey, 100, _scrollController),
+        new CollapseWeekCalendar(mediaQuey, 40, _scrollController, Colors.white, Colors.black),
         new Flexible(
           child: new ListView(
             controller: _scrollController,
@@ -144,144 +146,6 @@ class _AppState extends State<App> {
         )
       ],
     ));
-  }
-}
-
-class Collapse extends StatefulWidget {
-  Collapse(this.mediaQuey, this.heightBody, this._scrollController);
-  final MediaQueryData mediaQuey;
-  final double heightBody;
-  ScrollController _scrollController;
-  @override
-  _CollapseState createState() => _CollapseState();
-}
-
-class _CollapseState extends State<Collapse> with TickerProviderStateMixin {
-  AnimationController _collapseController;
-  Animation<double> _animationHeight;
-  Animation<double> _animationOpacity;
-  double _heightCollapse;
-  double _opacity = 1;
-  bool _close;
-  double _scrollValue = 0;
-
-  double _prevScroll = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _close = false;
-    _heightCollapse = widget.heightBody;
-    _collapseController = new AnimationController(vsync: this, duration: new Duration(milliseconds: 300));
-    _animationHeight = new Tween<double>(begin: 100, end: 0).animate(_collapseController);
-    _animationOpacity = new Tween<double>(begin: 1, end: 0).animate(_collapseController);
-
-    _collapseController.addListener((){
-      setState(() {
-        _heightCollapse = _animationHeight.value;
-        _opacity = _animationOpacity.value;
-      });
-      if(_collapseController.status == AnimationStatus.completed && !_close){
-        _collapseController.reset();
-        _close = false;
-      }
-    });
-
-    widget._scrollController.addListener((){
-        if(!_close)
-        {
-            _prevScroll = _scrollValue;
-          _scrollValue = widget._scrollController.position.pixels;
-        }
-        if(_scrollValue - _prevScroll > 5 && _prevScroll > 0 && !_close)
-        {
-          _close = true;
-          _scrollValue = 0;
-          _prevScroll = 0;
-          _collapseController.forward();
-        }
-      });
-  }
-
-  @override
-    void dispose() {
-      super.dispose();
-      _collapseController.dispose();
-    }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Container(
-      child: new Column(
-        children: <Widget>[
-          //header
-          new InkWell(
-            onTap: (){
-              if(_collapseController.status == AnimationStatus.completed && _close){
-                _collapseController.reverse();
-                _close = false;
-              }
-              else if(_collapseController.status == AnimationStatus.dismissed){
-                _collapseController.forward();
-                _close = true;
-              }
-
-            },
-            child: new Container(
-              padding: new EdgeInsets.all(5),
-              width: widget.mediaQuey.size.width,
-              decoration: new BoxDecoration(
-                color: Colors.black,
-                border: new Border(bottom: new BorderSide(color: Colors.white))
-              ),
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  new Text("Sessoes disponiveis", style: new TextStyle(fontSize: 24, color: Colors.white)),
-                  new Row(
-                    children: <Widget>[
-                      new Chip(label: new Text("10"),),
-                      new Icon(!_close ? Icons.arrow_drop_down : Icons.arrow_drop_up, color: Colors.white,)
-                    ],
-                  )
-                ],
-              ),
-            )
-          ),
-          new Container(
-            height: _heightCollapse,
-            width: widget.mediaQuey.size.width,
-            decoration: new BoxDecoration(color: Colors.black),
-            child: new Opacity(
-              opacity: _opacity,
-              child: new Container(
-                padding: new EdgeInsets.all(15),
-                child: new Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    new Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        new Text("Sessoes", style: new TextStyle(fontSize: 21, color: Colors.white),),
-                        new Text("10", style: new TextStyle(fontSize: 21, color: Colors.white),),
-                      ],
-                    ),
-                    new Divider(color: Colors.white,),
-                    new Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        new Text("Semanal", style: new TextStyle(fontSize: 21, color: Colors.white),),
-                        new Text("0", style: new TextStyle(fontSize: 21, color: Colors.white),),
-                      ],
-                    )
-                  ],
-              ),
-              ),
-            )
-          ),
-        ],
-      ),
-    );
   }
 }
 
